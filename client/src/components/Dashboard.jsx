@@ -31,10 +31,15 @@ export default function Dashboard() {
   const fetchAttacks = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("https://url-based-attack-detection-system.onrender.com/api/attacks");
-      // Expecting an array of attack objects. Example fields used below:
-      // { _id, type, ip, status, url, createdAt }
-      setAttacks(Array.isArray(res.data) ? res.data : []);
+      const res = await axios.get(import.meta.env.VITE_MY_API,{
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZWQzZGI0MDE2YWZmZTdkYTZhYjRlMCIsImVtYWlsIjoic3ViaGFzaEBnbWFpbC5jb20iLCJpYXQiOjE3NjAzNzgzNjksImV4cCI6MTc2MDk4MzE2OX0.74czCYeTJyk0KMVCBIYIzGx-KlOtwtjsUKMVmrP_ezs"
+        }
+      });
+
+      console.log(res.data.attacks)
+      setAttacks(Array.isArray(res.data.attacks) ? res.data.attacks : []);
     } catch (error) {
       console.error("Error fetching attacks:", error);
       setAttacks([]);
@@ -186,71 +191,70 @@ export default function Dashboard() {
       </div> */}
 
       <div className="overflow-x-auto bg-white shadow-xl rounded-xl border border-gray-200">
-  <table className="min-w-full table-auto divide-y divide-gray-200">
-    <thead className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
-      <tr>
-        <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">#</th>
-        <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">Attack Type</th>
-        <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">IP Address</th>
-        <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">Status</th>
-        <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">URL</th>
-        <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">Date</th>
-      </tr>
-    </thead>
-    <tbody className="bg-white divide-y divide-gray-200">
-      {loading ? (
-        <tr>
-          <td colSpan={6} className="text-center py-6 text-gray-500 font-medium">
-            Loading...
-          </td>
-        </tr>
-      ) : filteredAttacks.length > 0 ? (
-        filteredAttacks.map((a, index) => (
-          <tr
-            key={a._id || index}
-            className="hover:bg-gray-50 transition-colors duration-200"
-          >
-            <td className="p-3 text-sm">{index + 1}</td>
-            <td
-              className="p-3 text-sm font-semibold text-indigo-700"
-              title={a.attack_type === "SSRF" ? "Server‑Side Request Forgery" : ""}
-            >
-              {a.attack_type}
-            </td>
-            <td className="p-3 text-sm text-gray-700">{a.source_ip}</td>
-            <td className="p-3">
-              <span
-                className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
-                  a.status !== "Safe"
-                    ? "bg-red-100 text-red-700"
-                    : "bg-green-100 text-green-700"
-                }`}
-              >
-                {a.status}
-              </span>
-            </td>
-            <td className="p-3 text-sm text-gray-600 max-w-xs break-words hover:text-indigo-600 transition-colors duration-200">
-              {a.url}
-            </td>
-            <td className="p-3 text-sm text-gray-500">
-              {a.createdAt
-                ? new Date(a.createdAt).toLocaleString()
-                : a.timestamp
-                ? new Date(a.timestamp).toLocaleString()
-                : "-"}
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td colSpan={6} className="text-center py-6 text-gray-400 font-medium">
-            No attack data found.
-          </td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-</div>
+        <table className="min-w-full table-auto divide-y divide-gray-200">
+          <thead className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+            <tr>
+              <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">#</th>
+              <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">Attack Type</th>
+              <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">IP Address</th>
+              <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">Status</th>
+              <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">URL</th>
+              <th className="p-3 text-left text-sm font-medium uppercase tracking-wider">Date</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="text-center py-6 text-gray-500 font-medium">
+                  Loading...
+                </td>
+              </tr>
+            ) : filteredAttacks.length > 0 ? (
+              filteredAttacks.map((a, index) => (
+                <tr
+                  key={a._id || index}
+                  className="hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <td className="p-3 text-sm">{index + 1}</td>
+                  <td
+                    className="p-3 text-sm font-semibold text-indigo-700"
+                    title={a.attack_type === "SSRF" ? "Server‑Side Request Forgery" : ""}
+                  >
+                    {a.attack_type}
+                  </td>
+                  <td className="p-3 text-sm text-gray-700">{a.source_ip}</td>
+                  <td className="p-3">
+                    <span
+                      className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${a.status !== "Safe"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                      {a.status}
+                    </span>
+                  </td>
+                  <td className="p-3 text-sm text-gray-600 max-w-xs break-words hover:text-indigo-600 transition-colors duration-200">
+                    {a.url}
+                  </td>
+                  <td className="p-3 text-sm text-gray-500">
+                    {a.createdAt
+                      ? new Date(a.createdAt).toLocaleString()
+                      : a.timestamp
+                        ? new Date(a.timestamp).toLocaleString()
+                        : "-"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="text-center py-6 text-gray-400 font-medium">
+                  No attack data found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
     </div>
   );

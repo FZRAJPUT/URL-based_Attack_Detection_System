@@ -4,30 +4,22 @@ import dotenv from "dotenv";
 import attackRoutes from "./routes/attackRoutes.js";
 import connectDB from "./config/db.js";
 import path from 'path'
+import userRouter from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-// app.set("trust proxy", true);
-// app.use((req, res, next) => {
-//   const info = getClientIpInfo(req, { trustProxy: true });
-//   req.clientIp = info.ip;
-//   req.clientIpType = info.type;
-//   req.clientIpSource = info.source;
-//   console.log("client ip:", info);
-//   next();
-// });
-// app.use(express.static("public"));
 
 app.use("/api/attacks", attackRoutes);
+app.use("/api/user", userRouter);
 
 app.get("/",(req,res)=>{
     res.json({message:"Hello from server....."})
 })
 
-app.get("/myfile",(req,res)=>{
-    res.sendFile(path.resolve("./public/getClientsIP.js"));
+app.get("/attack_detection_system",(req,res)=>{
+    res.sendFile(path.resolve("./public/connectUsers.js"));
 })
 
 const PORT = 5000 || process.env.PORT
