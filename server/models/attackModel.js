@@ -22,14 +22,12 @@ const attackSchema = new mongoose.Schema({
         deviceType: String,
     },
     user_info: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-    }
-},
-    {
-        timestamps: true,
-    },);
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+    timestamps: { type: Date, default: Date.now },
+});
 
 
 
