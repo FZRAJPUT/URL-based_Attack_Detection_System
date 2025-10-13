@@ -1,8 +1,8 @@
-const checkAttack = async (email, ...inputs) => {
+const checkAttack = async (email,API, ...inputs) => {
     const inputValues = inputs.map(id => document.getElementById(id).value);
 
     try {
-        const res = await fetch(process.env.MY_API,
+        const res = await fetch(`${API}/api/attacks/analyze`,
             {
                 method: "POST",
                 headers: {
