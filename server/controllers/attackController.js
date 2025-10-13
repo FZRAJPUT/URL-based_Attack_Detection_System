@@ -9,15 +9,11 @@ export const analyzeURL = async (req, res) => {
   try {
     const { url } = req.body;
 
-    // Get User IP
-    let userIP =
-      req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
+    let userIP = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
     userIP = userIP.replace(/^::ffff:/, "");
 
-    // Get Origin / Referer
     const origin = req.headers.origin || req.headers.referer || "Unknown";
 
-    // Resolve Target IP
     let targetIP;
     try {
       const hostname = new URL(url).hostname;
@@ -27,10 +23,8 @@ export const analyzeURL = async (req, res) => {
       targetIP = "unresolved";
     }
 
-    // Detect Attack
     const attackType = detectAttack(url);
 
-    // Get Geo Location
     let location = geoip.lookup(userIP);
     if (!location) {
       if (userIP === "127.0.0.1" || userIP === "::1") {
@@ -40,7 +34,6 @@ export const analyzeURL = async (req, res) => {
       }
     }
 
-    // ✅ Parse User-Agent to get device info dynamically
     const parser = new UAParser(req.headers["user-agent"]);
     const deviceInfo = parser.getResult();
 
@@ -50,7 +43,6 @@ export const analyzeURL = async (req, res) => {
       deviceType: deviceInfo.device.type || "Desktop",
     };
 
-    // Save to MongoDB
     const attack = new Attack({
       source_ip: userIP,
       target_ip: targetIP,
@@ -65,7 +57,6 @@ export const analyzeURL = async (req, res) => {
 
     await attack.save();
 
-    // Response
     res.json({
       message: "Analyzed successfully",
       attack: {
@@ -103,18 +94,16 @@ export const getAttacks = async (req, res) => {
 
 export const exportAttacks = async (req, res) => {
   try {
-    const attacks = await Attack.find().lean(); // lean() returns plain JS objects (faster)
+    const attacks = await Attack.find().lean();
 
     if (!attacks.length) {
       return res.status(404).json({ message: "No attack records found." });
     }
 
-    // Define CSV columns (optional)
     const fields = ["timestamp", "source_ip", "url", "attack_type", "status"];
     const parser = new Parser({ fields });
     const csv = parser.parse(attacks);
 
-    // Set headers for direct CSV download
     res.header("Content-Type", "text/csv");
     res.attachment("attacks.csv");
     res.send(csv);

@@ -11,7 +11,7 @@ const URLCheck = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/attacks/analyze", { url });
+      const res = await axios.post("https://url-based-attack-detection-system.onrender.com/api/attacks/analyze", { url });
       console.log(res.data)
       setResult(res.data.attack);
     } catch (error) {
@@ -25,6 +25,7 @@ const URLCheck = () => {
   return (
     <div className="flex flex-col items-center justify-center bg-gradient-to-b from-indigo-100 to-white p-6">
       <h2 className="text-3xl font-bold mb-8 text-indigo-700">URL Safety Checker</h2>
+      <a href="./index.js">click me!</a>
 
       <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mb-6">
         <input

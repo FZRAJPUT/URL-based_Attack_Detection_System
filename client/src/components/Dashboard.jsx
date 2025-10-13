@@ -31,7 +31,7 @@ export default function Dashboard() {
   const fetchAttacks = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/attacks");
+      const res = await axios.get("https://url-based-attack-detection-system.onrender.com/api/attacks");
       // Expecting an array of attack objects. Example fields used below:
       // { _id, type, ip, status, url, createdAt }
       setAttacks(Array.isArray(res.data) ? res.data : []);

@@ -8,7 +8,7 @@ const ExportButton = () => {
     try {
       setLoading(true);
 
-      const response = await axios.get("http://localhost:5000/api/attacks/export", {
+      const response = await axios.get("https://url-based-attack-detection-system.onrender.com/api/attacks/export", {
         responseType: "blob", // ensure it’s a file
       });
 
