@@ -1,6 +1,8 @@
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import otpModel from "../models/OTPModel.js";
+import { sendOTPEmail } from "../utils/sendOTP.js";
 
 export const userLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -47,45 +49,106 @@ export const userLogin = async (req, res) => {
   }
 };
 
+export const verifyOTP = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const record = await otpModel.findOne({ email });
+
+    if (!record) {
+      return res.json({ success: false, message: "OTP expired or invalid" });
+    }
+
+    if (Number(record.otp) !== Number(otp)) {
+      return res.json({ success: false, message: "Incorrect OTP" });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      await otpModel.deleteOne({ email });
+      return res.json({ success: false, message: "Email already in use" });
+    }
+
+    const newUser = new User({
+      username: record.username,
+      email: record.email,
+      password: record.password,
+    });
+
+    await newUser.save();
+    await otpModel.deleteOne({ email });
+
+    return res.json({ success: true, message: "User registered successfully" });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Failed to verify OTP",
+      error: error.message,
+    });
+  }
+};
+
 
 export const userRegister = async (req, res) => {
-    const { email, password, username } = req.body;
-    try {
-        if (!email && !password && !username) {
-            return res.json({
-                message: "All fields"
-            })
-        }
-
-        // console.log(req.body)
-
-        let isExist = await User.findOne({ email });
-        if (isExist) {
-            return res.json({
-                message: "Email allready Registered..",
-                success: false
-            })
-        }
-
-        let hashPass = await bcrypt.hash(password, 10);
-
-        let user = new User({
-            email,
-            password: hashPass,
-            username
-        })
-
-        await user.save()
-
-        return res.json({
-            message: "user Registered successfully",
-            success: true
-        })
-    } catch (error) {
-        console.log(error.message);
-        return res.json({
-            message: error.message,
-            success: false
-        })
+  const { email, password, username } = req.body;
+  try {
+    if (!email && !password && !username) {
+      return res.json({
+        message: "All fields"
+      })
     }
+
+    let isExist = await User.findOne({ email });
+    if (isExist) {
+      return res.json({
+        message: "Email allready Registered..",
+        success: false
+      })
+    }
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    let hashPass = await bcrypt.hash(password, 10);
+
+    let otp = new otpModel({
+      email,
+      password: hashPass,
+      username,
+      otp: otpCode
+    })
+
+    await otp.save()
+
+    sendOTPEmail(email,otpCode)
+
+    return res.json({
+      message: "OTP send to " + email,
+      success: true
+    })
+  } catch (error) {
+    console.log(error.message);
+    return res.json({
+      message: error.message,
+      success: false
+    })
+  }
+}
+
+export const getUser = async (req, res) => {
+  try {
+
+    const user = await User.findById(req.user.id);
+    return res.json({
+      user: {
+        username: user.username,
+        email: user.email
+      }
+    })
+  } catch (error) {
+    console.log(error.message);
+    return res.json({
+      message: error.message,
+      success: false
+    })
+  }
 }

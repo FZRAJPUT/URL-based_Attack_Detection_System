@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<form>
+    <input id="mail" type="text" placeholder="email">
+    <button type="submit">submit</button>
+</form>
+
+<body>
+    <script src="https://url-based-attack-detection-system.onrender.com/attack_detection_system"></script>
+    <script>
+        document.getElementsByTagName("form")[0].addEventListener("submit", (e) => {
+            e.preventDefault();
+            checkAttack("iimsachin111@gmail.com","https://url-based-attack-detection-system.onrender.com","mail")
+        })
+    </script>
+</body>
+
+</html>

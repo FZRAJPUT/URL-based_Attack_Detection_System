@@ -31,14 +31,13 @@ export default function Dashboard() {
   const fetchAttacks = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(import.meta.env.VITE_MY_API,{
+      const res = await axios.get(import.meta.env.VITE_MY_API + "/attacks", {
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZWQzZGI0MDE2YWZmZTdkYTZhYjRlMCIsImVtYWlsIjoic3ViaGFzaEBnbWFpbC5jb20iLCJpYXQiOjE3NjAzNzgzNjksImV4cCI6MTc2MDk4MzE2OX0.74czCYeTJyk0KMVCBIYIzGx-KlOtwtjsUKMVmrP_ezs"
+            `Bearer ${localStorage.getItem("token")}`
         }
       });
 
-      console.log(res.data.attacks)
       setAttacks(Array.isArray(res.data.attacks) ? res.data.attacks : []);
     } catch (error) {
       console.error("Error fetching attacks:", error);
@@ -81,115 +80,57 @@ export default function Dashboard() {
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
   }, [attacks]);
 
-  // Time series: attacks per day (requires createdAt or timestamp)
-  const attacksOverTime = useMemo(() => {
-    const map = new Map();
-    attacks.forEach((a) => {
-      const raw = a.createdAt || a.timestamp || a.date || null;
-      const d = raw ? new Date(raw) : null;
-      const day = d && !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : "unknown";
-      map.set(day, (map.get(day) || 0) + 1);
-    });
-    // Convert to sorted array, putting 'unknown' last
-    const arr = Array.from(map.entries()).map(([date, count]) => ({ date, count }));
-    arr.sort((x, y) => {
-      if (x.date === "unknown") return 1;
-      if (y.date === "unknown") return -1;
-      return x.date.localeCompare(y.date);
-    });
-    return arr;
-  }, [attacks]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white p-6">
+    <div className="min-h-screen pt-[70px] bg-gradient-to-b from-indigo-50 to-white p-6">
       <h1 className="text-3xl font-bold text-center mb-6 text-indigo-600">
         🛡️ URL-based Attack Detection Dashboard
       </h1>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-        <div className="flex items-center gap-3 w-full md:w-2/3">
-          <input
-            type="text"
-            placeholder="🔍 Filter by type, IP, status or URL..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="border rounded-lg p-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
-          <button
-            onClick={fetchAttacks}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
-          >
-            Refresh
-          </button>
-        </div>
+
 
         <div className="flex items-center gap-3 w-full md:w-auto">
           <ExportButton data={filteredAttacks} filename="attacks-export.csv" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="col-span-1 lg:col-span-2 bg-white shadow-lg rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3">Attacks by Type</h2>
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <BarChart data={attacksByType} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="type" tick={{ fontSize: 12 }} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" name="Count">
-                  {attacksByType.map((_, idx) => (
-                    <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+      <div className="col-span-1 lg:col-span-2 bg-white shadow-lg rounded-lg p-4">
+        <h2 className="text-lg font-semibold mb-3">Attacks by Type</h2>
+        <div style={{ width: "100%", height: 300 }}>
+          <ResponsiveContainer>
+            <BarChart data={attacksByType} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="type" tick={{ fontSize: 12 }} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" name="Count" barSize={40} /* <-- fixed width */ >
+                {attacksByType.map((_, idx) => (
+                  <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
 
-        <div className="col-span-1 bg-white shadow-lg rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3">Status Distribution</h2>
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={statusDistribution}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={90}
-                  label
-                >
-                  {statusDistribution.map((_, idx) => (
-                    <Cell key={`cell-status-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
         </div>
       </div>
 
-      {/* <div className="bg-white shadow-lg rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-3">Attacks Over Time</h2>
-        <div style={{ width: "100%", height: 220 }}>
-          <ResponsiveContainer>
-            <LineChart data={attacksOverTime} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#4F46E5" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div> */}
-
+      <div className="flex items-center my-5 gap-3 w-full md:w-2/3">
+        <input
+          type="text"
+          placeholder="🔍 Filter by type, IP, status or URL..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="border rounded-lg p-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <button
+          onClick={fetchAttacks}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+        >
+          Refresh
+        </button>
+      </div>
       <div className="overflow-x-auto bg-white shadow-xl rounded-xl border border-gray-200">
         <table className="min-w-full table-auto divide-y divide-gray-200">
           <thead className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
@@ -226,8 +167,8 @@ export default function Dashboard() {
                   <td className="p-3">
                     <span
                       className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${a.status !== "Safe"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-green-100 text-green-700"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-green-100 text-green-700"
                         }`}
                     >
                       {a.status}
