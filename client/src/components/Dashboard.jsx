@@ -9,11 +9,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  PieChart,
-  Pie,
   Cell,
-  LineChart,
-  Line,
   CartesianGrid,
 } from "recharts";
 
@@ -47,7 +43,6 @@ export default function Dashboard() {
     }
   };
 
-  // Filtered list for the table
   const filteredAttacks = useMemo(() => {
     if (!filter) return attacks;
     const q = filter.toLowerCase();
@@ -60,7 +55,6 @@ export default function Dashboard() {
     );
   }, [attacks, filter]);
 
-  // Chart data: counts by attack type
   const attacksByType = useMemo(() => {
     const map = new Map();
     attacks.forEach((a) => {
@@ -70,7 +64,6 @@ export default function Dashboard() {
     return Array.from(map.entries()).map(([type, count]) => ({ type, count }));
   }, [attacks]);
 
-  // Chart data: status distribution
   const statusDistribution = useMemo(() => {
     const map = new Map();
     attacks.forEach((a) => {
@@ -95,24 +88,32 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="col-span-1 lg:col-span-2 bg-white shadow-lg rounded-lg p-4">
+      <div className="col-span-1 lg:col-span-2 bg-white shadow-lg rounded-lg px-4">
         <h2 className="text-lg font-semibold mb-3">Attacks by Type</h2>
-        <div style={{ width: "100%", height: 300 }}>
-          <ResponsiveContainer>
-            <BarChart data={attacksByType} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+        <div className="w-full h-80 sm:h-80 md:h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={attacksByType}
+              margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+              barCategoryGap="20%"
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="type" tick={{ fontSize: 12 }} />
+              <XAxis className="text-[5px] sm:text-[10px]"
+                dataKey="type"
+                interval={0} 
+                angle={-30}
+                textAnchor="end"
+              />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="count" name="Count" barSize={40} /* <-- fixed width */ >
+              <Bar dataKey="count" name="Count">
                 {attacksByType.map((_, idx) => (
                   <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-
         </div>
       </div>
 

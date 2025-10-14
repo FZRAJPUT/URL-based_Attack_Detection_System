@@ -1,24 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>checkAttack - HTML Example</title>
 </head>
-<form>
-    <input id="mail" type="text" placeholder="email">
-    <button type="submit">submit</button>
-</form>
-
 <body>
-    <script src="https://url-based-attack-detection-system.onrender.com/attack_detection_system"></script>
-    <script>
-        document.getElementsByTagName("form")[0].addEventListener("submit", (e) => {
-            e.preventDefault();
-            checkAttack("iimsachin111@gmail.com","https://url-based-attack-detection-system.onrender.com","mail")
-        })
-    </script>
-</body>
+  <form id="demo-form">
+    <input id="email" name="email" type="text" placeholder="your email" />
+    <input id="username" name="username" type="text" placeholder="username" />
+    <button type="submit">Submit</button>
+  </form>
 
+  <script src="https://url-based-attack-detection-system.onrender.com/attack_detection_system" async></script>
+  <script>
+    const OWNER_ID = "subhash@gmail.com";
+    const API_BASE = "https://url-based-attack-detection-system.onrender.com";
+
+    document.getElementById('demo-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const result = await checkAttack(OWNER_ID, API_BASE, 'email', 'username');
+        console.log(result);
+        // if (result && result.flagged) {
+        //   alert('Suspicious input detected. Submission blocked.');
+        //   return;
+        // }
+        // proceed with your submission logic
+      } catch (err) {
+        console.error('checkAttack failed', err);
+      }
+    });
+  </script>
+</body>
 </html>

@@ -12,8 +12,8 @@ const checkAttack = async (email,API, ...inputs) => {
             }
         );
         const data = await res.json();
-        console.log(data);
+        return data;
     } catch (error) {
-        console.error("Error analyzing inputs:", error.message);
+        return error
     }
 }
