@@ -9,6 +9,7 @@ import Profile from './components/Profile';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import OTPVerify from './components/OTPVerify';
 import Docs from './components/Docs';
+import About from './components/About';
 
 function App() {
   const isLoggedIn = !!localStorage.getItem("token");
@@ -32,7 +33,7 @@ function App() {
         <Route
           path="/docs"
           element={
-              <Docs />
+            <Docs />
           }
         />
 
@@ -45,6 +46,12 @@ function App() {
           }
         />
 
+        <Route
+          path="/about"
+          element={
+            <About />
+          }
+        />
         {/* Auth routes */}
         <Route
           path="/login"

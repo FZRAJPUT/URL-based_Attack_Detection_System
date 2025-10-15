@@ -61,11 +61,11 @@ const OTPVerify = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-900 via-indigo-950 to-black px-4">
-      <div className="relative bg-slate-900 p-8 rounded-3xl shadow-lg w-full max-w-md text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-50 via-indigo-100 to-indigo-200 px-4">
+      <div className="relative bg-slate-100 p-8 rounded-3xl shadow-lg w-full max-w-md text-center">
         {/* Loader Overlay */}
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-900/70 rounded-3xl">
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-200/70 rounded-3xl">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
           </div>
         )}
@@ -86,7 +86,7 @@ const OTPVerify = () => {
                 onChange={(e) => handleChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 maxLength="1"
-                className="w-12 h-12 text-center text-xl rounded-xl bg-slate-800 border border-gray-700 focus:border-indigo-400 focus:outline-none text-white"
+                className="w-12 h-12 text-center text-xl rounded-xl bg-slate-200 border border-gray-100 focus:border-indigo-400 focus:outline-none"
                 disabled={loading}
               />
             ))}

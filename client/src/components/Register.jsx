@@ -16,12 +16,37 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Validate password and return list of failed rules
+  const validatePassword = (password) => {
+    const errors = [];
+    if (password.length < 8) errors.push("At least 8 characters");
+    if (!/[A-Z]/.test(password)) errors.push("At least one uppercase letter");
+    if (!/[a-z]/.test(password)) errors.push("At least one lowercase letter");
+    if (!/[0-9]/.test(password)) errors.push("At least one number");
+    if (!/[@$!%*?&]/.test(password))
+      errors.push("At least one special character (@$!%*?&)");
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const passwordErrors = validatePassword(formData.password);
+    if (passwordErrors.length > 0) {
+      toast.error(
+        "Password invalid:\n" + passwordErrors.map((err) => `- ${err}`).join("\n"),
+        { duration: 5000 }
+      );
+      return; // stop submission if password invalid
+    }
+
     setLoading(true);
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_MY_API}/user/register`, formData);
+      const res = await axios.post(
+        `${import.meta.env.VITE_MY_API}/user/register`,
+        formData
+      );
 
       if (!res.data.success) {
         toast.error(res.data.message || "Registration failed");
@@ -29,7 +54,7 @@ const Register = () => {
       }
 
       toast.success(res.data.message || "Account created successfully!");
-       navigate("/otpverify", { state: { email: formData.email } });
+      navigate("/otpverify", { state: { email: formData.email } });
     } catch (error) {
       console.error(error.message);
       toast.error("Something went wrong. Please try again.");
@@ -41,7 +66,6 @@ const Register = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
-        {/* 🔹 Loader Overlay */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-2xl">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
@@ -99,6 +123,9 @@ const Register = () => {
               required
               disabled={loading}
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Must be at least 8 characters, include uppercase, lowercase, number, and special character.
+            </p>
           </div>
 
           <button

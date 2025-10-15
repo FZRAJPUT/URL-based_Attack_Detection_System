@@ -95,7 +95,7 @@ const Docs = () => {
   );
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 max-w-5xl mx-auto font-sans">
+    <div className="p-4 pt-20 max-w-5xl mx-auto font-sans">
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800">CDN Integration Guide</h1>
       <p className="mb-6 text-gray-700 text-sm sm:text-base">
         This guide explains how to integrate the URL-Based Attack Detection System into your web projects using our CDN script.
