@@ -42,8 +42,8 @@ const Docs = () => {
       // USER_EMAIL - registered email in your system
       // API_URL    - API URL (available on official website)
       const auth = {
-        USER_EMAIL: "iimsachin111@gmail.com",   // change this to your registered email
-        API_URL: "https://url-based-attack-detection-system.onrender.com",       // API URL
+        USER_EMAIL: "yourEmail@gmail.com",   // change this to your registered email
+        API_URL: "https://url-based-attack-detection-system.onrender.com",       // BASE URL
         // timeout: 5000                        // (optional) custom timeout in milliseconds
       };
 
