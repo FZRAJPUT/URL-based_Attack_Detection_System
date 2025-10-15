@@ -28,48 +28,81 @@ const Docs = () => {
     }
   };
 
-  const scriptTag = `<script src="https://url-based-attack-detection-system.onrender.com/attack_detection_system.v1.js" async></script>`;
+  const scriptTag = `<script src="http://localhost:5000/attack_detection_system" defer></script>`;
 
-  const htmlExample = `<!doctype html>
-<html>
+  const htmlExample = `<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>checkAttack - HTML Example</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>checkAttack Demo</title>
 </head>
 <body>
-  <form id="demo-form">
-    <input id="email" name="email" type="text" placeholder="your email" />
-    <input id="username" name="username" type="text" placeholder="username" />
+  <!-- 
+    Example form where user inputs will be checked using your attack detection system.
+    Each input field must have a unique 'id' so it can be passed to checkAttack().
+  -->
+  <form id="my-form">
+    <input id="email" name="email" placeholder="email" />
+    <input id="username" name="username" placeholder="username" />
     <button type="submit">Submit</button>
   </form>
 
-  <script src="https://url-based-attack-detection-system.onrender.com/attack_detection_system.v1.js" async></script>
+  <script src="http://localhost:5000/attack_detection_system" defer></script>
   <script>
-    const OWNER_ID = "public-owner-id"; // avoid secrets
-    const API_BASE = "https://url-based-attack-detection-system.onrender.com";
-
-    document.getElementById('demo-form').addEventListener('submit', async (e) => {
+    document.getElementById('my-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (typeof window.checkAttack !== 'function') {
-        console.error('Detection script missing');
-        return;
-      }
-      try {
-        const result = await window.checkAttack(OWNER_ID, API_BASE, 'email', 'username');
-        console.log(result);
-        if (result && result.flagged) {
-          alert('Suspicious input detected. Submission blocked.');
-          return;
+
+      // ----------------------------------------------------
+      // STEP 1: Configure your authentication details
+      // ----------------------------------------------------
+      // USER_EMAIL - registered email in your system
+      // API_URL    - API URL (available on official website)
+      const auth = {
+        USER_EMAIL: "example@gmail.com",   // 👈 change this to your registered email
+        API_URL: "http://localhost:5000",       // 👈 change to your hosted API URL in production
+        // timeout: 5000                        // (optional) custom timeout in milliseconds
+      };
+
+      // ----------------------------------------------------
+      // STEP 2: Call the checkAttack function
+      // ----------------------------------------------------
+      // Pass: (auth object, input field IDs)
+      // You can include any number of input IDs to scan.
+      const response = await checkAttack(auth, "email", "username");
+
+      // Log the full result for debugging or development
+      console.log("checkAttack result:", response);
+
+      // ----------------------------------------------------
+      // STEP 3: Handle the response from the attack detector
+      // ----------------------------------------------------
+      // The response includes an array of results for each input value.
+      // Each item contains information like whether it's "Safe" or not.
+      if (response) {
+        // Example structure: { attacks: [ { input: "admin' OR 1=1 --", status: "SQL Injection" }, ... ] }
+        if (response.attacks && Array.isArray(response.attacks)) {
+          // Check if any of the inputs are unsafe
+          const flagged = response.attacks.some(r => r.status !== "Safe");
+
+          // If an unsafe pattern is detected, show an alert
+          if (flagged) {
+            alert("Suspicious Activity detected — possible injection or XSS attempt!");
+            return;
+          }
         }
-        // proceed with your submission logic
-      } catch (err) {
-        console.error('checkAttack failed', err);
+
+        // If all inputs are safe
+        console.log("Inputs are safe — continue with form submission logic here.");
+      } else {
+        // In case of network error or unexpected failure
+        console.warn("checkAttack failed:", res && res.error, "local:", res && res.localFallback);
       }
     });
   </script>
 </body>
-</html>`;
+</html>
+`;
 
   const reactExample = `import React, { useEffect, useState } from "react";
 
