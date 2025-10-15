@@ -10,17 +10,13 @@ export const analyzeURL = async (req, res) => {
   try {
     const { urls, email } = req.body;
 
-    let user = await User.findOne({ email });
-
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.json({
-        message: "Invalid Email",
-        success: false
-      })
+      return res.json({ message: "Invalid Email", success: false });
     }
 
     if (!urls || !Array.isArray(urls) || urls.length === 0) {
-      return res.status(400).json({ error: "No URLs provided" });
+      return res.status(400).json({ error: "No URLs provided", success: false });
     }
 
     // Get user IP
@@ -60,27 +56,30 @@ export const analyzeURL = async (req, res) => {
       }
 
       const attackType = detectAttack(url);
+      const status = attackType === "Normal" ? "Safe" : "Attempted";
 
-      const attack = new Attack({
-        source_ip: userIP,
-        target_ip: targetIP,
-        url,
-        attack_type: attackType,
-        status: attackType === "Normal" ? "Safe" : "Attempted",
-        origin,
-        location,
-        device_info: deviceDetails,
-        user_info:user._id,
-      });
-
-      await attack.save();
+      // Only save malicious attempts
+      if (attackType !== "Normal") {
+        const attack = new Attack({
+          source_ip: userIP,
+          target_ip: targetIP,
+          url,
+          attack_type: attackType,
+          status,
+          origin,
+          location,
+          device_info: deviceDetails,
+          user_info: user._id,
+        });
+        await attack.save();
+      }
 
       return {
         url,
         source_ip: userIP,
         target_ip: targetIP,
         attack_type: attackType,
-        status: attackType === "Normal" ? "Safe" : "Attempted",
+        status,
         origin,
         location,
         user_info: user._id,
@@ -91,6 +90,7 @@ export const analyzeURL = async (req, res) => {
     res.json({
       message: "Analyzed successfully",
       attacks: results,
+      success: true,
     });
   } catch (err) {
     console.error(err);
@@ -99,11 +99,12 @@ export const analyzeURL = async (req, res) => {
 };
 
 
+
 export const getAttacks = async (req, res) => {
   try {
     const attacks = await Attack.find({
       user_info: req.user.id,
-      status: { $ne: "Safe" } 
+      status: { $ne: "Safe" }
     })
       .sort({ createdAt: -1 })
       .populate("user_info", "name email");

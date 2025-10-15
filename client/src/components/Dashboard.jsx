@@ -34,6 +34,8 @@ export default function Dashboard() {
         }
       });
 
+      console.log(res.data.attacks)
+
       setAttacks(Array.isArray(res.data.attacks) ? res.data.attacks : []);
     } catch (error) {
       console.error("Error fetching attacks:", error);
@@ -181,8 +183,8 @@ export default function Dashboard() {
                   <td className="p-3 text-sm text-gray-500">
                     {a.createdAt
                       ? new Date(a.createdAt).toLocaleString()
-                      : a.timestamp
-                        ? new Date(a.timestamp).toLocaleString()
+                      : a.timestamps
+                        ? new Date(a.timestamps).toLocaleString()
                         : "-"}
                   </td>
                 </tr>
