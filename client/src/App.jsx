@@ -32,9 +32,7 @@ function App() {
         <Route
           path="/docs"
           element={
-            <ProtectedRoutes>
               <Docs />
-            </ProtectedRoutes>
           }
         />
 

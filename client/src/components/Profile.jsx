@@ -5,6 +5,7 @@ import { FaUserCircle, FaEnvelope } from "react-icons/fa";
 const Profile = () => {
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const getUser = async () => {
     try {
@@ -14,8 +15,8 @@ const Profile = () => {
         },
       });
       setUserDetails(res.data.user);
-    } catch (error) {
-      console.log(error.message);
+    } catch {
+      setUserDetails(null);
     } finally {
       setLoading(false);
     }
@@ -25,9 +26,14 @@ const Profile = () => {
     getUser();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <p className="text-gray-400 animate-pulse">Loading profile...</p>
       </div>
     );
@@ -35,14 +41,14 @@ const Profile = () => {
 
   if (!userDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <p className="text-gray-400">No user data found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-200 via-slate-100 to-slate-50 text-black flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-200 via-slate-100 to-slate-50 text-black flex flex-col items-center justify-center px-4 relative">
       <div className="bg-slate-100 p-8 rounded-2xl shadow-lg w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
           <FaUserCircle className="text-indigo-400 w-20 h-20 mb-3" />
@@ -72,16 +78,37 @@ const Profile = () => {
 
         <div className="mt-8 text-center">
           <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              window.location.reload();
-            }}
+            onClick={() => setShowLogoutModal(true)}
             className="px-5 py-2 cursor-pointer bg-red-500 hover:bg-red-600 rounded-full text-white font-medium shadow-md transition"
           >
             Logout
           </button>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+          <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-sm text-center">
+            <h3 className="text-lg font-semibold mb-4">Confirm Logout</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to logout?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full font-medium transition"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-full font-medium transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
