@@ -72,7 +72,7 @@ const Register = () => {
           </div>
         )}
 
-        <h2 className="mb-6 text-center text-3xl font-bold text-gray-800">
+        <h2 className="mb-6 text-center text-3xl font-bold text-indigo-600">
           Create an Account ✨
         </h2>
 

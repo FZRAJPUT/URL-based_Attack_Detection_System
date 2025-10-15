@@ -48,7 +48,7 @@ const Home = () => {
       {/* Footer */}
       <footer className="bg-gray-100 py-6 w-full mt-auto">
         <div className="max-w-3xl mx-auto text-center text-gray-600 text-sm px-4">
-          &copy; {new Date().getFullYear()} AttackDetector • Created with ❤️ by Subhas Kumar
+          &copy; {new Date().getFullYear()} AttackDetector • Created with ❤️ by Subhash Kumar
         </div>
       </footer>
     </div>
