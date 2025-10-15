@@ -73,7 +73,7 @@ const Register = () => {
         )}
 
         <h2 className="mb-6 text-center text-3xl font-bold text-indigo-600">
-          Create an Account ✨
+          Create an Account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
