@@ -52,10 +52,10 @@ const Profile = () => {
       <div className="bg-slate-100 p-8 rounded-2xl shadow-lg w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
           <FaUserCircle className="text-indigo-400 w-20 h-20 mb-3" />
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-indigo-400 bg-clip-text text-transparent">
             {userDetails.username || "User"}
           </h2>
-          <p className="text-gray-400 mt-1 text-sm">Welcome to AttackDetector</p>
+          <p className="text-gray-400 mt-1 text-sm">Welcome to InputShield</p>
         </div>
 
         <div className="space-y-4">

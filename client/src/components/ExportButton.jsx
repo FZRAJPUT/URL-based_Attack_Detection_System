@@ -8,8 +8,8 @@ const ExportButton = () => {
     try {
       setLoading(true);
 
-      const response = await axios.get("https://url-based-attack-detection-system.onrender.com/api/attacks/export", {
-        responseType: "blob", // ensure it’s a file
+      const response = await axios.get(import.meta.env.VITE_MY_API+"/attacks/export", {
+        responseType: "blob",
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -31,7 +31,7 @@ const ExportButton = () => {
       disabled={loading}
       className={`${loading
           ? "bg-gray-400 cursor-not-allowed"
-          : "bg-gradient-to-r from-purple-200 via-purple-300 to-purple-500 hover:opacity-90"
+          : "bg-indigo-500 hover:opacity-90"
         } text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200 shadow-md`}
     >
       {loading ? "Exporting..." : "Export Attacks (CSV)"}

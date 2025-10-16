@@ -24,17 +24,15 @@ const Navbar = () => {
   }, [location.pathname]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-gradient-to-r from-indigo-600/70 to-purple-600/70 border-b border-white/20 shadow-md">
+    <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-indigo-600 border-b border-white/20 shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
-        {/* Logo */}
         <h1 className="text-2xl font-semibold text-white tracking-wide">
           <Link to={"/"}>
-            <span className="text-[#73EC8B]">A</span>ttack
-            <span className="text-[#73EC8B]">Detector</span>
+            <span className="text-[#73EC8B]">I</span>nput
+            <span className="text-[#73EC8B]">Shield</span>
           </Link>
         </h1>
 
-        {/* Desktop Nav */}
         <ul className="hidden md:flex items-center space-x-8 text-white">
           {navItems.map((item) => (
             <li
@@ -75,7 +73,6 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Mobile Toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden text-white text-3xl focus:outline-none"
@@ -84,7 +81,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Nav */}
       <AnimatePresence>
         {isOpen && (
           <motion.ul

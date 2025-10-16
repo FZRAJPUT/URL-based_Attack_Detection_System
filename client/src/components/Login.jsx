@@ -47,7 +47,7 @@ const Login = () => {
                 )}
 
                 <h2 className="mb-6 text-center text-2xl font-bold text-indigo-600">
-                    Welcome to AttackDetector
+                    Welcome to InputShield
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
