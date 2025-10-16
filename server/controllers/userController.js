@@ -128,7 +128,7 @@ export const userRegister = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     return res.json({
-      message: error.message,
+      message: "Something Went Wrong Try again",
       success: false
     })
   }
