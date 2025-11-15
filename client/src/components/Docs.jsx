@@ -84,7 +84,7 @@ const Docs = () => {
 
   const CodeBlock = ({ code, copied, setCopied }) => (
     <div className="relative bg-gray-50 p-4 rounded-md border border-gray-200 mb-4 overflow-x-auto break-words sm:overflow-x-auto">
-      <pre className="text-sm sm:text-base font-mono whitespace-pre-wrap">{code}</pre>
+      <pre className="text-[14px] font-mono whitespace-pre-wrap">{code}</pre>
       <button
         onClick={() => handleCopy(code, setCopied)}
         className="absolute top-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm flex items-center gap-1"
@@ -144,14 +144,6 @@ const Docs = () => {
           <li>Use <code>defer</code> when including the CDN script.</li>
           <li>Always check <code>res.attacks</code> before allowing form submission.</li>
         </ul>
-      </section>
-
-      {/* Summary */}
-      <section>
-        <h2 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Summary</h2>
-        <p className="text-gray-700 text-sm sm:text-base">
-          Your project is now protected against common URL-based attacks. Developers can integrate your attack detection CDN quickly and safely.
-        </p>
       </section>
     </div>
   );
