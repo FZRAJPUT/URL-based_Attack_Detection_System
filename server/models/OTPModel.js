@@ -6,10 +6,10 @@ const otpSchema = new mongoose.Schema({
     otp: { type: String, required: true },
     username: { type: String, required: true },
     password: {
-            type: String,
-            required: true,
-            minlength: 6,
-        },
+        type: String,
+        required: true,
+        minlength: 6,
+    },
     createdAt: { type: Date, expires: 300, default: Date.now }, // expires in 5 minutes
 });
 

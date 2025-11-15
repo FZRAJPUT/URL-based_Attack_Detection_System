@@ -91,24 +91,26 @@ export const verifyOTP = async (req, res) => {
 
 export const userRegister = async (req, res) => {
   const { email, password, username } = req.body;
+
   try {
-    if (!email && !password && !username) {
+    if (!email || !password || !username) {
       return res.json({
-        message: "All fields"
-      })
+        message: "All fields are required",
+        success: false
+      });
     }
 
-    let isExist = await User.findOne({ email });
+    const isExist = await User.findOne({ email });
     if (isExist) {
       return res.json({
-        message: "Email allready Registered..",
+        message: "Email already registered",
         success: false
-      })
+      });
     }
 
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    let hashPass = await bcrypt.hash(password, 10);
+    const hashPass = await bcrypt.hash(password, 10);
 
     let otp = new otpModel({
       email,
@@ -119,20 +121,29 @@ export const userRegister = async (req, res) => {
 
     await otp.save()
 
-    sendOTPEmail(email,otpCode)
+    let response = await sendOTPEmail(email, otpCode);
+
+    if (!response.success) {
+      return res.json({
+        message: "Email not Sent...",
+        success: false
+      })
+    }
 
     return res.json({
-      message: "OTP send to " + email,
+      message: `OTP sent to ${email}`,
       success: true
-    })
+    });
+
   } catch (error) {
     console.log(error.message);
     return res.json({
-      message: "Something Went Wrong Try again",
+      message: "Something went wrong, try again",
       success: false
-    })
+    });
   }
-}
+};
+
 
 export const getUser = async (req, res) => {
   try {

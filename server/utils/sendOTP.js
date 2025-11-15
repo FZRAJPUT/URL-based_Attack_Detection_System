@@ -1,44 +1,60 @@
-import nodemailer from "nodemailer";
+import Brevo from "@getbrevo/brevo";
 
 export const sendOTPEmail = async (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  try {
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    apiInstance.setApiKey(
+      Brevo.TransactionalEmailsApiApiKeys.apiKey,
+      process.env.BREVO_API_KEY
+    );
 
-  await transporter.sendMail({
-    from: `"InputShield" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: "Your OTP for InputShield Verification",
-    html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-  <!-- Header -->
-  <div style="background-color: #0f1724; padding: 20px; text-align: center; color: #ffffff;">
-    <h1 style="margin: 0; color: #73EC8B;">AttackDetector</h1>
-  </div>
+    // --- Modern, Tailwind-inspired HTML Template ---
+    const htmlTemplate = `
+      <div style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 40px 20px; text-align: center;">
+        <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); padding: 40px;">
+          
+          <h1 style="color: #1f2937; font-size: 24px; font-weight: 700; margin-bottom: 20px;">
+            OTP Verification Required
+          </h1>
+          
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.5; margin-bottom: 30px;">
+            Thank you for using InputShield! Please use the following One-Time Password (OTP) to complete your verification process.
+          </p>
 
-  <!-- Body -->
-  <div style="padding: 30px; background-color: #ffffff;">
-    <h2 style="color: #111827;">Your One-Time Password (OTP)</h2>
-    <p style="font-size: 16px; color: #555;">
-      Use the following OTP to complete your verification. This code is valid for the next 5 minutes.
-    </p>
-    <div style="text-align: center; margin: 30px 0;">
-      <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0ea5e9;">${otp}</span>
-    </div>
-    <p style="font-size: 14px; color: #888;">
-      If you did not request this, please ignore this email or contact support.
-    </p>
-  </div>
+          <div style="margin-bottom: 30px;">
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
+              Your One-Time Password (OTP) is:
+            </p>
+            <div style="display: inline-block; padding: 15px 30px; background-color: #e0f2f1; border: 2px solid #2dd4bf; border-radius: 8px;">
+              <strong style="color: #0d9488; font-size: 32px; letter-spacing: 5px; font-weight: 700; user-select: text;">
+                ${otp}
+              </strong>
+            </div>
+          </div>
 
-  <!-- Footer -->
-  <div style="background-color: #f4f4f4; padding: 15px; text-align: center; font-size: 12px; color: #888;">
-    © ${new Date().getFullYear()} AttackDetector. All rights reserved.
-  </div>
-</div>`,
-  });
+          <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+            This code is valid for a limited time and should not be shared with anyone.
+          </p>
+          
+        </div>
+        <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
+          © InputShield. All rights reserved.
+        </p>
+      </div>
+    `;
+    // ---------------------------------------------------
+
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: "InputShield", email: process.env.EMAIL_USER };
+    sendSmtpEmail.to = [{ email }];
+    sendSmtpEmail.subject = "🔒 Your InputShield OTP Code";
+    sendSmtpEmail.htmlContent = htmlTemplate; // Use the styled template
+    sendSmtpEmail.textContent = `Your OTP is ${otp}. This code should not be shared with anyone.`;
+    
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+    return { message: "Email sent..", success: true };
+  } catch (error) {
+    console.error("Brevo Email Error:", error);
+    return { error: error.message || error, success: false };
+  }
 };
